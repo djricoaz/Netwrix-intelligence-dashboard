@@ -62,7 +62,7 @@ export default function SetupWizard({ onComplete }) {
             <Shield size={20} />
           </div>
           <div>
-            <p className="text-white font-bold text-lg">Netwrix Intelligence Dashboard</p>
+            <p className="text-white font-bold text-lg">Netwrix Co-Dashboard</p>
             <p className="text-gray-500 text-xs">Setup Wizard</p>
           </div>
         </div>

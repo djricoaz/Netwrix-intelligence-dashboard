@@ -8,7 +8,7 @@ services:
       - "3000:3000"
     environment:
       - RAILS_ENV=development
-      - MONGODB_URI=mongodb://mongo:27017/netwrix_intelligence
+      - MONGODB_URI=mongodb://mongo:27017/netwrix_co_dashboard
       - INFLUXDB_URL=http://influxdb:8086
       - INFLUXDB_TOKEN=${INFLUXDB_TOKEN}
       - INFLUXDB_ORG=netwrix

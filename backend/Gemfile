@@ -5,7 +5,7 @@ gem "rails", "~> 7.2"
 gem "mongoid", "~> 9.0"          # MongoDB ODM
 gem "influxdb-client", "~> 3.1"  # InfluxDB 2.x client
 gem "faraday", "~> 2.9"          # HTTP client for NA/NDC APIs
-gem "faraday-ntlm"               # NTLM auth for Netwrix Auditor
+gem "rubyntlm"                   # NTLM auth for Netwrix Auditor
 gem "nokogiri"                   # XML parsing for NDC responses
 gem "oj"                         # Fast JSON
 gem "rack-cors"                  # CORS for React frontend
@@ -14,6 +14,8 @@ gem "redis", "~> 5.0"            # Sidekiq backend + caching
 gem "blueprinter"                # Serializers
 gem "pagy"                       # Pagination
 gem "dotenv-rails"               # Env vars
+gem "puma", "~> 6.0"             # Web server
+gem "connection_pool", "~> 2.4" # Pin for Rails 7.2 compatibility
 
 group :development, :test do
   gem "rspec-rails"

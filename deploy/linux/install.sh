@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# Netwrix Intelligence Dashboard — Linux Installer
+# Netwrix Co-Dashboard — Linux Installer
 # Supports: Ubuntu 20.04+, Debian 11+, RHEL 8+
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; CYAN='\033[0;36m'; NC='\033[0m'
@@ -12,7 +12,7 @@ error() { echo -e "${RED}[ERR]${NC} $1"; exit 1; }
 
 echo ""
 echo -e "${CYAN}╔══════════════════════════════════════════════════════╗${NC}"
-echo -e "${CYAN}║   Netwrix Intelligence Dashboard — Linux Installer   ║${NC}"
+echo -e "${CYAN}║   Netwrix Co-Dashboard — Linux Installer   ║${NC}"
 echo -e "${CYAN}╚══════════════════════════════════════════════════════╝${NC}"
 echo ""
 
@@ -23,7 +23,7 @@ command -v docker      >/dev/null 2>&1 && docker compose version >/dev/null 2>&1
 ok "Docker ready"
 
 # ── Install directory ─────────────────────────────────────────────────────────
-INSTALL_DIR="${NID_DIR:-/opt/netwrix-intelligence-dashboard}"
+INSTALL_DIR="${NID_DIR:-/opt/netwrix-co-dashboard}"
 info "Installing to $INSTALL_DIR"
 mkdir -p "$INSTALL_DIR"/{tools,ssl,logs}
 cp -r . "$INSTALL_DIR/"
@@ -53,7 +53,7 @@ if [ ! -f ssl/cert.pem ]; then
   warn "No SSL certificate found. Generating self-signed cert..."
   openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
     -keyout ssl/key.pem -out ssl/cert.pem \
-    -subj "/CN=netwrix-intelligence-dashboard/O=NID" 2>/dev/null
+    -subj "/CN=netwrix-co-dashboard/O=NID" 2>/dev/null
   ok "Self-signed cert generated (replace with CA cert for production)"
 fi
 
@@ -87,9 +87,9 @@ curl -sf -X POST http://localhost/api/v1/sync/ad         >/dev/null 2>&1 || true
 curl -sf -X POST http://localhost/api/v1/sync/fileserver >/dev/null 2>&1 || true
 
 # ── Systemd service ───────────────────────────────────────────────────────────
-cat > /etc/systemd/system/netwrix-intelligence-dashboard.service << EOF
+cat > /etc/systemd/system/netwrix-co-dashboard.service << EOF
 [Unit]
-Description=Netwrix Intelligence Dashboard
+Description=Netwrix Co-Dashboard
 After=docker.service
 Requires=docker.service
 
@@ -104,7 +104,7 @@ WantedBy=multi-user.target
 EOF
 
 systemctl daemon-reload
-systemctl enable netwrix-intelligence-dashboard
+systemctl enable netwrix-co-dashboard
 ok "Systemd service registered (auto-starts on boot)"
 
 # ── Done ──────────────────────────────────────────────────────────────────────

@@ -1,4 +1,4 @@
-# Netwrix Intelligence Dashboard — Architecture
+# Netwrix Co-Dashboard — Architecture
 
 ## Modules (adaptive — enabled based on NA/NDC configured sources)
 

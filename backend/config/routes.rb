@@ -135,5 +135,6 @@ Rails.application.routes.draw do
     end
   end
 
-  get "health", to: proc { [200, {}, ["ok"]] }
+  get "health",      to: proc { [200, {}, ["ok"]] }
+  get "api/health",  to: proc { [200, {}, ["ok"]] }
 end

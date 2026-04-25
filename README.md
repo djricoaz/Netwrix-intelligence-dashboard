@@ -1,1 +1,1 @@
-# Netwrix Intelligence Dashboard
+# Netwrix Co-Dashboard

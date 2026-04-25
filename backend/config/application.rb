@@ -6,7 +6,7 @@ require "active_job/railtie"
 
 Bundler.require(*Rails.groups)
 
-module NetwrixIntelligenceDashboard
+module NetwrixCoDashboard
   class Application < Rails::Application
     config.load_defaults 7.2
     config.api_only = true
@@ -26,7 +26,7 @@ module NetwrixIntelligenceDashboard
 
     config.active_job.queue_adapter = :sidekiq
 
-    config.cache_store = :redis_cache_store, { url: ENV.fetch("REDIS_URL", "redis://redis:6379/1") }
+    config.cache_store = :redis_cache_store, { url: ENV.fetch("REDIS_URL", "redis://redis:6379/1"), pool_size: 5, pool_timeout: 5 }
 
     config.action_cable.mount_path = "/cable"
     config.action_cable.allowed_request_origins = ["*"]
