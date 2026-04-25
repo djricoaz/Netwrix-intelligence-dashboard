@@ -122,6 +122,7 @@ Rails.application.routes.draw do
 
       # === SYNC JOBS ===
       namespace :sync do
+        post "discover",                to: "sync#discover"
         post "ad",                      to: "sync#ad"
         post "entra",                   to: "sync#entra"
         post "fileserver",              to: "sync#fileserver"

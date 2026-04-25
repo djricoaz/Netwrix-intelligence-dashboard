@@ -59,12 +59,18 @@ export default function SetupWizard({ onComplete }) {
   };
 
   const saveNDC = async () => {
-    await api.put("/settings/ndc", {
-      ndc_url: ndcUrl, ndc_username: ndcUsername, ndc_password: ndcPassword
-    });
-    const { data } = await api.post("/api/v1/sync/discover");
-    setSources(data);
-    setStep(2);
+    try {
+      await api.put("/settings/ndc", {
+        ndc_url: ndcUrl, ndc_username: ndcUsername, ndc_password: ndcPassword
+      });
+      const { data } = await api.post("/sync/discover");
+      setSources(data);
+      setStep(2);
+    } catch (e) {
+      console.error("Discover failed", e);
+      setSources({ modules: {} });
+      setStep(2);
+    }
   };
 
   const startSync = async () => {
