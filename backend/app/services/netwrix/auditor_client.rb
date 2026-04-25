@@ -1,15 +1,28 @@
 module Netwrix
   class AuditorClient
-    BASE_URL = ENV["NA_BASE_URL"]
     PAGE_SIZE = 1000
 
-    def initialize
-      @conn = Faraday.new(url: BASE_URL, ssl: { verify: false }) do |f|
-        f.request :ntlm, ENV["NA_USERNAME"], ENV["NA_PASSWORD"]
+    def initialize(base_url: nil, username: nil, password: nil)
+      url  = base_url || ENV["NA_BASE_URL"]
+      user = username || ENV["NA_USERNAME"]
+      pass = password || ENV["NA_PASSWORD"]
+
+      raise ArgumentError, "NA_BASE_URL not configured" if url.blank?
+
+      @conn = Faraday.new(url: url, ssl: { verify: false }) do |f|
+        f.request :ntlm, user, pass
         f.request :json
         f.response :json
         f.adapter Faraday.default_adapter
       end
+    end
+
+    def health_check
+      response = @conn.get("activity_records/enum")
+      response.status < 500
+    rescue => e
+      Rails.logger.warn("[NA] health_check failed: #{e.message}")
+      false
     end
 
     # Fetch all activity records with optional filters

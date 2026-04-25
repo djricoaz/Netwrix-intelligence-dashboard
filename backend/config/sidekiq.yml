@@ -1,0 +1,48 @@
+:concurrency: 5
+:queues:
+  - [critical, 3]
+  - [sync, 2]
+  - [ai, 2]
+  - [integrations, 2]
+  - [default, 1]
+
+:scheduler:
+  :schedule:
+    sync_ad:
+      :cron: "*/15 * * * *"
+      :class: SyncModuleJob
+      :args: ["ad"]
+      :queue: sync
+    sync_entra:
+      :cron: "*/15 * * * *"
+      :class: SyncModuleJob
+      :args: ["entra"]
+      :queue: sync
+    sync_fileserver:
+      :cron: "*/15 * * * *"
+      :class: SyncModuleJob
+      :args: ["fileserver"]
+      :queue: sync
+    sync_sharepoint:
+      :cron: "*/30 * * * *"
+      :class: SyncModuleJob
+      :args: ["sharepoint"]
+      :queue: sync
+    sync_exchange:
+      :cron: "*/30 * * * *"
+      :class: SyncModuleJob
+      :args: ["exchange"]
+      :queue: sync
+    sync_teams:
+      :cron: "*/30 * * * *"
+      :class: SyncModuleJob
+      :args: ["teams"]
+      :queue: sync
+    refresh_user_risk:
+      :cron: "0 */4 * * *"
+      :class: RefreshUserRiskJob
+      :queue: ai
+    refresh_breach_score:
+      :cron: "0 * * * *"
+      :class: RefreshBreachScoreJob
+      :queue: default

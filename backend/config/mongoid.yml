@@ -1,0 +1,21 @@
+development:
+  clients:
+    default:
+      uri: <%= ENV.fetch("MONGODB_URI", "mongodb://mongo:27017/netwrix_intelligence_dev") %>
+      options:
+        server_selection_timeout: 5
+        wait_queue_timeout: 5
+
+production:
+  clients:
+    default:
+      uri: <%= ENV.fetch("MONGODB_URI", "mongodb://mongo:27017/netwrix_intelligence") %>
+      options:
+        server_selection_timeout: 5
+        wait_queue_timeout: 5
+        ssl: false
+
+test:
+  clients:
+    default:
+      uri: <%= ENV.fetch("MONGODB_URI", "mongodb://mongo:27017/netwrix_intelligence_test") %>
