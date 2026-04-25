@@ -11,37 +11,57 @@ const STEPS = [
 ];
 
 export default function SetupWizard({ onComplete }) {
-  const [step, setStep]     = useState(0);
-  const [naForm, setNaForm] = useState({ na_url: "https://", na_username: "", na_password: "" });
-  const [ndcForm, setNdcForm] = useState({ ndc_url: "http://", ndc_username: "", ndc_password: "" });
-  const [naStatus, setNaStatus]   = useState(null);   // null | "testing" | "ok" | "fail"
+  const [step, setStep] = useState(0);
+
+  // NA: user enters IP + credentials; URL is auto-built
+  const [naIp, setNaIp]           = useState("");
+  const [naUsername, setNaUsername] = useState("");
+  const [naPassword, setNaPassword] = useState("");
+
+  // NDC: user enters IP + credentials; URL is auto-built
+  const [ndcIp, setNdcIp]           = useState("");
+  const [ndcUsername, setNdcUsername] = useState("");
+  const [ndcPassword, setNdcPassword] = useState("");
+
+  const [naStatus, setNaStatus]   = useState(null);
   const [ndcStatus, setNdcStatus] = useState(null);
   const [sources, setSources]     = useState(null);
   const [syncing, setSyncing]     = useState(false);
 
+  const naUrl  = naIp  ? `https://${naIp}:9699/netwrix/api/v1`           : "";
+  const ndcUrl = ndcIp ? `http://${ndcIp}/netwrix/dataclassification`     : "";
+
   const testNA = async () => {
     setNaStatus("testing");
     try {
-      const { data } = await api.post("/settings/test_na", naForm);
+      const { data } = await api.post("/settings/test_na", {
+        na_url: naUrl, na_username: naUsername, na_password: naPassword
+      });
       setNaStatus(data.connected ? "ok" : "fail");
     } catch { setNaStatus("fail"); }
   };
 
   const saveNA = async () => {
-    await api.put("/settings/na", naForm);
+    await api.put("/settings/na", {
+      na_url: naUrl, na_username: naUsername, na_password: naPassword
+    });
     setStep(1);
   };
 
   const testNDC = async () => {
     setNdcStatus("testing");
     try {
-      const { data } = await api.post("/settings/test_ndc", ndcForm);
+      const { data } = await api.post("/settings/test_ndc", {
+        ndc_url: ndcUrl, ndc_username: ndcUsername, ndc_password: ndcPassword
+      });
       setNdcStatus(data.connected ? "ok" : "fail");
     } catch { setNdcStatus("fail"); }
   };
 
   const saveNDC = async () => {
-    await api.put("/settings/ndc", ndcForm);
+    await api.put("/settings/ndc", {
+      ndc_url: ndcUrl, ndc_username: ndcUsername, ndc_password: ndcPassword
+    });
     const { data } = await api.post("/api/v1/sync/discover");
     setSources(data);
     setStep(2);
@@ -91,15 +111,21 @@ export default function SetupWizard({ onComplete }) {
           {/* Step 0 — Netwrix Auditor */}
           {step === 0 && (
             <div className="space-y-4">
-              <Field label="Server URL" placeholder="https://na-server:9699/netwrix/api/v1"
-                value={naForm.na_url} onChange={v => setNaForm(f => ({ ...f, na_url: v }))} />
+              <Field label="Netwrix Auditor Server IP or Hostname" placeholder="192.168.0.202"
+                value={naIp} onChange={v => { setNaIp(v); setNaStatus(null); }} />
+              {naIp && (
+                <div className="flex items-center gap-2 px-3 py-2 bg-gray-800/60 border border-gray-700 rounded-lg text-xs text-gray-400">
+                  <span className="text-gray-600">API URL →</span>
+                  <span className="text-blue-400 font-mono">{naUrl}</span>
+                </div>
+              )}
               <Field label="Username" placeholder="DOMAIN\serviceaccount"
-                value={naForm.na_username} onChange={v => setNaForm(f => ({ ...f, na_username: v }))} />
+                value={naUsername} onChange={v => { setNaUsername(v); setNaStatus(null); }} />
               <Field label="Password" type="password" placeholder="••••••••"
-                value={naForm.na_password} onChange={v => setNaForm(f => ({ ...f, na_password: v }))} />
+                value={naPassword} onChange={v => { setNaPassword(v); setNaStatus(null); }} />
               <StatusBadge status={naStatus} />
               <div className="flex gap-3 pt-2">
-                <button onClick={testNA} disabled={naStatus === "testing" || !naForm.na_url || !naForm.na_username || !naForm.na_password}
+                <button onClick={testNA} disabled={naStatus === "testing" || !naIp || !naUsername || !naPassword}
                   className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-700 text-sm text-gray-300 hover:bg-gray-800 disabled:opacity-40">
                   <Wifi size={13} /> Test Connection
                 </button>
@@ -116,19 +142,25 @@ export default function SetupWizard({ onComplete }) {
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-xs text-gray-500 bg-gray-800/50 border border-gray-700 rounded-lg px-3 py-2 mb-4">
                 <CheckCircle size={12} className="text-green-400" />
-                Using same credentials as Netwrix Auditor
-                <button onClick={() => setNdcForm(f => ({ ...f, ndc_username: naForm.na_username, ndc_password: naForm.na_password }))}
+                Reuse Netwrix Auditor credentials?
+                <button onClick={() => { setNdcUsername(naUsername); setNdcPassword(naPassword); setNdcStatus(null); }}
                   className="ml-auto text-blue-400 hover:text-blue-300">Apply</button>
               </div>
-              <Field label="NDC Server URL" placeholder="http://ndc-server"
-                value={ndcForm.ndc_url} onChange={v => setNdcForm(f => ({ ...f, ndc_url: v }))} />
+              <Field label="NDC Server IP or Hostname" placeholder="192.168.0.203"
+                value={ndcIp} onChange={v => { setNdcIp(v); setNdcStatus(null); }} />
+              {ndcIp && (
+                <div className="flex items-center gap-2 px-3 py-2 bg-gray-800/60 border border-gray-700 rounded-lg text-xs text-gray-400">
+                  <span className="text-gray-600">API URL →</span>
+                  <span className="text-blue-400 font-mono">{ndcUrl}</span>
+                </div>
+              )}
               <Field label="Username" placeholder="DOMAIN\serviceaccount"
-                value={ndcForm.ndc_username} onChange={v => setNdcForm(f => ({ ...f, ndc_username: v }))} />
+                value={ndcUsername} onChange={v => { setNdcUsername(v); setNdcStatus(null); }} />
               <Field label="Password" type="password" placeholder="••••••••"
-                value={ndcForm.ndc_password} onChange={v => setNdcForm(f => ({ ...f, ndc_password: v }))} />
+                value={ndcPassword} onChange={v => { setNdcPassword(v); setNdcStatus(null); }} />
               <StatusBadge status={ndcStatus} />
               <div className="flex gap-3 pt-2">
-                <button onClick={testNDC} disabled={ndcStatus === "testing" || !ndcForm.url}
+                <button onClick={testNDC} disabled={ndcStatus === "testing" || !ndcIp || !ndcUsername || !ndcPassword}
                   className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-700 text-sm text-gray-300 hover:bg-gray-800 disabled:opacity-40">
                   <Wifi size={13} /> Test Connection
                 </button>
