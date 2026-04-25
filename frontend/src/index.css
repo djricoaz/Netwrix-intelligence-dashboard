@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg:        #0a0d14;
+  --color-surface:   #111827;
+  --color-border:    #1f2937;
+  --color-primary:   #3b82f6;
+  --color-danger:    #ef4444;
+  --color-warning:   #f59e0b;
+  --color-success:   #10b981;
+  --color-critical:  #dc2626;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: #e5e7eb;
+  font-family: "Inter", system-ui, sans-serif;
+  margin: 0;
+}
+
+/* Risk level colors */
+.risk-critical { @apply text-red-500 bg-red-500/10 border-red-500/30; }
+.risk-high      { @apply text-orange-400 bg-orange-400/10 border-orange-400/30; }
+.risk-medium    { @apply text-yellow-400 bg-yellow-400/10 border-yellow-400/30; }
+.risk-low       { @apply text-green-400 bg-green-400/10 border-green-400/30; }
+.risk-unknown   { @apply text-gray-400 bg-gray-400/10 border-gray-400/30; }

@@ -1,0 +1,22 @@
+source "https://rubygems.org"
+ruby "3.3.6"
+
+gem "rails", "~> 7.2"
+gem "mongoid", "~> 9.0"          # MongoDB ODM
+gem "influxdb-client", "~> 3.1"  # InfluxDB 2.x client
+gem "faraday", "~> 2.9"          # HTTP client for NA/NDC APIs
+gem "faraday-ntlm"               # NTLM auth for Netwrix Auditor
+gem "nokogiri"                   # XML parsing for NDC responses
+gem "oj"                         # Fast JSON
+gem "rack-cors"                  # CORS for React frontend
+gem "sidekiq", "~> 7.3"          # Background jobs (data sync)
+gem "redis", "~> 5.0"            # Sidekiq backend + caching
+gem "blueprinter"                # Serializers
+gem "pagy"                       # Pagination
+gem "dotenv-rails"               # Env vars
+
+group :development, :test do
+  gem "rspec-rails"
+  gem "factory_bot_rails"
+  gem "rubocop-rails"
+end

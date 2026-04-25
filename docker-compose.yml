@@ -1,0 +1,90 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    container_name: nid_backend
+    ports:
+      - "3000:3000"
+    environment:
+      - RAILS_ENV=development
+      - MONGODB_URI=mongodb://mongo:27017/netwrix_intelligence
+      - INFLUXDB_URL=http://influxdb:8086
+      - INFLUXDB_TOKEN=${INFLUXDB_TOKEN}
+      - INFLUXDB_ORG=netwrix
+      - INFLUXDB_BUCKET=audit_events
+      - OLLAMA_URL=http://ollama:11434
+      - NA_BASE_URL=${NA_BASE_URL}
+      - NA_USERNAME=${NA_USERNAME}
+      - NA_PASSWORD=${NA_PASSWORD}
+      - NDC_BASE_URL=${NDC_BASE_URL}
+      - NDC_USERNAME=${NDC_USERNAME}
+      - NDC_PASSWORD=${NDC_PASSWORD}
+    depends_on:
+      - mongo
+      - influxdb
+      - ollama
+    volumes:
+      - ./backend:/app
+    networks:
+      - nid_net
+
+  frontend:
+    build: ./frontend
+    container_name: nid_frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:3000/api/v1
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - nid_net
+
+  mongo:
+    image: mongo:7
+    container_name: nid_mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+      - ./infra/mongodb/init.js:/docker-entrypoint-initdb.d/init.js
+    networks:
+      - nid_net
+
+  influxdb:
+    image: influxdb:2.7
+    container_name: nid_influxdb
+    ports:
+      - "8086:8086"
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=netwrix2024
+      - DOCKER_INFLUXDB_INIT_ORG=netwrix
+      - DOCKER_INFLUXDB_INIT_BUCKET=audit_events
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUXDB_TOKEN}
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+    networks:
+      - nid_net
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: nid_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - nid_net
+
+volumes:
+  mongo_data:
+  influxdb_data:
+  ollama_data:
+
+networks:
+  nid_net:
+    driver: bridge

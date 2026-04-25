@@ -1,0 +1,4 @@
+PingCastle.exe
+*.xml
+.env
+node_modules/
