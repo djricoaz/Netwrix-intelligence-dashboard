@@ -12,8 +12,8 @@ const STEPS = [
 
 export default function SetupWizard({ onComplete }) {
   const [step, setStep]     = useState(0);
-  const [naForm, setNaForm] = useState({ url: "https://", username: "", password: "" });
-  const [ndcForm, setNdcForm] = useState({ url: "http://", username: "", password: "" });
+  const [naForm, setNaForm] = useState({ na_url: "https://", na_username: "", na_password: "" });
+  const [ndcForm, setNdcForm] = useState({ ndc_url: "http://", ndc_username: "", ndc_password: "" });
   const [naStatus, setNaStatus]   = useState(null);   // null | "testing" | "ok" | "fail"
   const [ndcStatus, setNdcStatus] = useState(null);
   const [sources, setSources]     = useState(null);
@@ -92,14 +92,14 @@ export default function SetupWizard({ onComplete }) {
           {step === 0 && (
             <div className="space-y-4">
               <Field label="Server URL" placeholder="https://na-server:9699/netwrix/api/v1"
-                value={naForm.url} onChange={v => setNaForm(f => ({ ...f, url: v }))} />
+                value={naForm.na_url} onChange={v => setNaForm(f => ({ ...f, na_url: v }))} />
               <Field label="Username" placeholder="DOMAIN\serviceaccount"
-                value={naForm.username} onChange={v => setNaForm(f => ({ ...f, username: v }))} />
+                value={naForm.na_username} onChange={v => setNaForm(f => ({ ...f, na_username: v }))} />
               <Field label="Password" type="password" placeholder="••••••••"
-                value={naForm.password} onChange={v => setNaForm(f => ({ ...f, password: v }))} />
+                value={naForm.na_password} onChange={v => setNaForm(f => ({ ...f, na_password: v }))} />
               <StatusBadge status={naStatus} />
               <div className="flex gap-3 pt-2">
-                <button onClick={testNA} disabled={naStatus === "testing" || !naForm.url || !naForm.username || !naForm.password}
+                <button onClick={testNA} disabled={naStatus === "testing" || !naForm.na_url || !naForm.na_username || !naForm.na_password}
                   className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-700 text-sm text-gray-300 hover:bg-gray-800 disabled:opacity-40">
                   <Wifi size={13} /> Test Connection
                 </button>
@@ -117,15 +117,15 @@ export default function SetupWizard({ onComplete }) {
               <div className="flex items-center gap-2 text-xs text-gray-500 bg-gray-800/50 border border-gray-700 rounded-lg px-3 py-2 mb-4">
                 <CheckCircle size={12} className="text-green-400" />
                 Using same credentials as Netwrix Auditor
-                <button onClick={() => setNdcForm(f => ({ ...f, username: naForm.username, password: naForm.password }))}
+                <button onClick={() => setNdcForm(f => ({ ...f, ndc_username: naForm.na_username, ndc_password: naForm.na_password }))}
                   className="ml-auto text-blue-400 hover:text-blue-300">Apply</button>
               </div>
               <Field label="NDC Server URL" placeholder="http://ndc-server"
-                value={ndcForm.url} onChange={v => setNdcForm(f => ({ ...f, url: v }))} />
+                value={ndcForm.ndc_url} onChange={v => setNdcForm(f => ({ ...f, ndc_url: v }))} />
               <Field label="Username" placeholder="DOMAIN\serviceaccount"
-                value={ndcForm.username} onChange={v => setNdcForm(f => ({ ...f, username: v }))} />
+                value={ndcForm.ndc_username} onChange={v => setNdcForm(f => ({ ...f, ndc_username: v }))} />
               <Field label="Password" type="password" placeholder="••••••••"
-                value={ndcForm.password} onChange={v => setNdcForm(f => ({ ...f, password: v }))} />
+                value={ndcForm.ndc_password} onChange={v => setNdcForm(f => ({ ...f, ndc_password: v }))} />
               <StatusBadge status={ndcStatus} />
               <div className="flex gap-3 pt-2">
                 <button onClick={testNDC} disabled={ndcStatus === "testing" || !ndcForm.url}
