@@ -1,0 +1,127 @@
+version: "3.9"
+
+# Production deployment for Linux (Ubuntu/Debian/RHEL)
+# Run: docker compose -f docker-compose.prod.yml up -d
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: nid_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - frontend_build:/usr/share/nginx/html:ro
+    depends_on:
+      - backend
+    networks:
+      - nid_net
+    restart: always
+
+  backend:
+    image: nid_backend:latest
+    container_name: nid_backend
+    expose:
+      - "3000"
+    env_file: .env
+    environment:
+      - RAILS_ENV=production
+    depends_on:
+      - mongo
+      - influxdb
+      - redis
+    volumes:
+      - ./tools:/app/tools:ro          # PingCastle.exe
+      - backend_tmp:/app/tmp
+    networks:
+      - nid_net
+    restart: always
+
+  sidekiq:
+    image: nid_backend:latest
+    container_name: nid_sidekiq
+    command: bundle exec sidekiq
+    env_file: .env
+    environment:
+      - RAILS_ENV=production
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - nid_net
+    restart: always
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: nid_ollama
+    expose:
+      - "11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - nid_net
+    restart: always
+
+  mongo:
+    image: mongo:7
+    container_name: nid_mongo
+    expose:
+      - "27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - nid_net
+    restart: always
+
+  influxdb:
+    image: influxdb:2.7
+    container_name: nid_influxdb
+    expose:
+      - "8086"
+    env_file: .env
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+    networks:
+      - nid_net
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    container_name: nid_redis
+    expose:
+      - "6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - nid_net
+    restart: always
+
+  cef_listener:
+    image: nid_backend:latest
+    container_name: nid_cef_listener
+    command: bundle exec rails cef_listener:start
+    ports:
+      - "5514:5514"                    # CEF TCP — Netwrix CEF Add-on points here
+    env_file: .env
+    environment:
+      - RAILS_ENV=production
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - nid_net
+    restart: always
+
+volumes:
+  mongo_data:
+  influxdb_data:
+  redis_data:
+  ollama_data:
+  backend_tmp:
+  frontend_build:
+
+networks:
+  nid_net:
+    driver: bridge
