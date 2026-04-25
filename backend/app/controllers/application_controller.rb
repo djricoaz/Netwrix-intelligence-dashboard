@@ -7,8 +7,8 @@ class ApplicationController < ActionController::API
   private
 
   def require_setup_complete
-    return if SetupState.completed?
-    return if request.path.start_with?("/api/v1/setup")
+    return if AppConfig.setup_completed?
+    return if request.path.start_with?("/api/v1/settings")
     render json: { setup_required: true, redirect: "/setup" }, status: 503
   end
 end

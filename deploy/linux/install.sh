@@ -29,32 +29,23 @@ mkdir -p "$INSTALL_DIR"/{tools,ssl,logs}
 cp -r . "$INSTALL_DIR/"
 cd "$INSTALL_DIR"
 
-# ── Configuration wizard ──────────────────────────────────────────────────────
-info "Starting configuration wizard..."
+# ── Auto-generate secrets (no manual config needed — all done via web UI) ──────
+info "Generating secrets..."
 
 if [ ! -f .env ]; then
   cp .env.example .env
-
-  read -rp "  Netwrix Auditor URL (e.g. https://na-server:9699/netwrix/api/v1): " NA_URL
-  read -rp "  Netwrix Auditor username (DOMAIN\\user): " NA_USER
-  read -rsp "  Netwrix Auditor password: " NA_PASS; echo
-  read -rp "  NDC URL (e.g. http://ndc-server): " NDC_URL
-  read -rp "  NDC username (DOMAIN\\user): " NDC_USER
-  read -rsp "  NDC password: " NDC_PASS; echo
-
-  sed -i "s|NA_BASE_URL=.*|NA_BASE_URL=$NA_URL|"       .env
-  sed -i "s|NA_USERNAME=.*|NA_USERNAME=$NA_USER|"       .env
-  sed -i "s|NA_PASSWORD=.*|NA_PASSWORD=$NA_PASS|"       .env
-  sed -i "s|NDC_BASE_URL=.*|NDC_BASE_URL=$NDC_URL|"     .env
-  sed -i "s|NDC_USERNAME=.*|NDC_USERNAME=$NDC_USER|"    .env
-  sed -i "s|NDC_PASSWORD=.*|NDC_PASSWORD=$NDC_PASS|"    .env
-
   INFLUX_TOKEN=$(openssl rand -hex 32)
   SECRET_KEY=$(openssl rand -hex 64)
   sed -i "s|INFLUXDB_TOKEN=.*|INFLUXDB_TOKEN=$INFLUX_TOKEN|" .env
   sed -i "s|SECRET_KEY_BASE=.*|SECRET_KEY_BASE=$SECRET_KEY|" .env
-
-  ok "Configuration saved to .env"
+  # Clear credential placeholders — they are entered via the web UI wizard
+  sed -i "s|NA_BASE_URL=.*|NA_BASE_URL=|"   .env
+  sed -i "s|NA_USERNAME=.*|NA_USERNAME=|"   .env
+  sed -i "s|NA_PASSWORD=.*|NA_PASSWORD=|"   .env
+  sed -i "s|NDC_BASE_URL=.*|NDC_BASE_URL=|" .env
+  sed -i "s|NDC_USERNAME=.*|NDC_USERNAME=|" .env
+  sed -i "s|NDC_PASSWORD=.*|NDC_PASSWORD=|" .env
+  ok "Secrets generated — NA/NDC credentials are entered in the web UI on first launch"
 fi
 
 # ── SSL ───────────────────────────────────────────────────────────────────────

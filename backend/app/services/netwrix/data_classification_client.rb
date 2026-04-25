@@ -1,15 +1,27 @@
 module Netwrix
   class DataClassificationClient
-    BASE_URL = ENV["NDC_BASE_URL"]
+    def initialize(base_url: nil, username: nil, password: nil)
+      cfg  = AppConfig.instance rescue nil
+      url  = base_url || cfg&.ndc_url      || ENV["NDC_BASE_URL"]
+      user = username || cfg&.ndc_username  || ENV["NDC_USERNAME"]
+      pass = password || cfg&.ndc_password  || ENV["NDC_PASSWORD"]
 
-    def initialize
-      @conn = Faraday.new(url: BASE_URL, ssl: { verify: false }) do |f|
+      raise ArgumentError, "NDC_BASE_URL not configured" if url.blank?
+
+      @conn = Faraday.new(url: url, ssl: { verify: false }) do |f|
         f.request :url_encoded
         f.response :logger if Rails.env.development?
         f.adapter Faraday.default_adapter
         f.headers["Content-Type"] = "text/xml; charset=utf-8"
       end
-      @auth = { username: ENV["NDC_USERNAME"], password: ENV["NDC_PASSWORD"] }
+      @auth = { username: user, password: pass }
+
+    def health_check
+      sensitive_items(limit: 1)
+      true
+    rescue
+      false
+    end
     end
 
     # Returns classified items with sensitive data tags

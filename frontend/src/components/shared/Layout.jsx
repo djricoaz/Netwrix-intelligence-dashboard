@@ -50,6 +50,7 @@ export default function Layout({ modules = {}, children }) {
 
           <div className="mt-4 mb-2 px-4 text-[10px] uppercase tracking-widest text-gray-600">Platform</div>
           <SidebarItem to="/integrations" icon={Settings} label="Integrations" />
+          <SidebarItem to="/settings"    icon={Settings} label="Settings" />
         </nav>
 
         {/* Footer */}

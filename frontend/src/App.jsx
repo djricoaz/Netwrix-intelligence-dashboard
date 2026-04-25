@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useModuleConfig } from "./hooks/useModuleConfig";
 import Layout from "./components/shared/Layout";
@@ -12,10 +13,21 @@ import AiChat from "./pages/AiChat";
 import PingCastleUpload from "./pages/PingCastleUpload";
 import IntegrationsPage from "./pages/IntegrationsPage";
 import SocPage from "./pages/SocPage";
+import SettingsPage from "./pages/settings/SettingsPage";
+import SetupWizard from "./pages/wizard/SetupWizard";
 import LoadingScreen from "./components/shared/LoadingScreen";
+import api from "./services/api";
 
 export default function App() {
+  const [setupDone, setSetupDone] = useState(null);
   const { modules, isLoading } = useModuleConfig();
+
+  useEffect(() => {
+    api.get("/settings").then(r => setSetupDone(r.data.setup_completed)).catch(() => setSetupDone(false));
+  }, []);
+
+  if (setupDone === null || isLoading) return <LoadingScreen />;
+  if (!setupDone) return <SetupWizard onComplete={() => setSetupDone(true)} />;
 
   if (isLoading) return <LoadingScreen />;
 
@@ -32,6 +44,7 @@ export default function App() {
         <Route path="/ai"           element={<AiChat />} />
         <Route path="/soc"          element={<SocPage />} />
         <Route path="/integrations" element={<IntegrationsPage />} />
+        <Route path="/settings"     element={<SettingsPage />} />
         {modules.ad         && <Route path="/pingcastle"     element={<PingCastleUpload />} />}
         <Route path="*"     element={<Navigate to="/" />} />
       </Routes>

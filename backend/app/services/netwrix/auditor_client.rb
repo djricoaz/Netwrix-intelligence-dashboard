@@ -3,9 +3,10 @@ module Netwrix
     PAGE_SIZE = 1000
 
     def initialize(base_url: nil, username: nil, password: nil)
-      url  = base_url || ENV["NA_BASE_URL"]
-      user = username || ENV["NA_USERNAME"]
-      pass = password || ENV["NA_PASSWORD"]
+      cfg  = AppConfig.instance rescue nil
+      url  = base_url || cfg&.na_url  || ENV["NA_BASE_URL"]
+      user = username || cfg&.na_username || ENV["NA_USERNAME"]
+      pass = password || cfg&.na_password || ENV["NA_PASSWORD"]
 
       raise ArgumentError, "NA_BASE_URL not configured" if url.blank?
 

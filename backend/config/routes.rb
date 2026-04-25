@@ -110,6 +110,16 @@ Rails.application.routes.draw do
         get  "recommendations/:module_name", to: "recommendations#index"
       end
 
+      # === SETTINGS ===
+      get  "settings",            to: "settings#show"
+      put  "settings/na",         to: "settings#update_na"
+      put  "settings/ndc",        to: "settings#update_ndc"
+      put  "settings/ai",         to: "settings#update_ai"
+      put  "settings/sync",       to: "settings#update_sync"
+      post "settings/test_na",    to: "settings#test_na"
+      post "settings/test_ndc",   to: "settings#test_ndc"
+      post "settings/complete_setup", to: "settings#complete_setup"
+
       # === SYNC JOBS ===
       namespace :sync do
         post "ad",                      to: "sync#ad"
