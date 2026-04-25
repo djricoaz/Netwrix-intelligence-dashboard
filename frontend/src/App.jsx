@@ -10,6 +10,8 @@ import ExchangeModule from "./pages/ExchangeModule";
 import TeamsModule from "./pages/TeamsModule";
 import AiChat from "./pages/AiChat";
 import PingCastleUpload from "./pages/PingCastleUpload";
+import IntegrationsPage from "./pages/IntegrationsPage";
+import SocPage from "./pages/SocPage";
 import LoadingScreen from "./components/shared/LoadingScreen";
 
 export default function App() {
@@ -27,7 +29,9 @@ export default function App() {
         {modules.sharepoint && <Route path="/sharepoint/*"   element={<SharePointModule />} />}
         {modules.exchange   && <Route path="/exchange/*"     element={<ExchangeModule />} />}
         {modules.teams      && <Route path="/teams/*"        element={<TeamsModule />} />}
-        <Route path="/ai"   element={<AiChat />} />
+        <Route path="/ai"           element={<AiChat />} />
+        <Route path="/soc"          element={<SocPage />} />
+        <Route path="/integrations" element={<IntegrationsPage />} />
         {modules.ad         && <Route path="/pingcastle"     element={<PingCastleUpload />} />}
         <Route path="*"     element={<Navigate to="/" />} />
       </Routes>
